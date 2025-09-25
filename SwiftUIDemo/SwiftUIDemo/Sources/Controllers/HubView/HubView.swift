@@ -8,7 +8,8 @@
 import SwiftUI
 
 private enum Route: Hashable {
-    case animals
+    case profile
+    case animals // Multiple Select
     case summary([String]) // имена выбранных
 }
 
@@ -21,17 +22,8 @@ public struct HubView: View {
         NavigationStack(path: $path) {
             List {
                 Section("Демки") {
-                    Button {
-                        path.append(.animals)
-                    } label: {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Животные (Multiple Select)")
-                                .font(.headline)
-                            Text("Домашние, дикие, морские, птицы")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
+                    multipleSelectButton()
+                    profileCard()
                 }
             }
             .navigationTitle("SwiftUI Demos")
@@ -48,13 +40,43 @@ public struct HubView: View {
 
                 case .summary(let names):
                     SelectionSummaryView(items: names) {
-                        // Вернуться на корень
                         path.removeAll()
                     }
                     .navigationTitle("Выбрано")
                     .navigationBarTitleDisplayMode(.inline)
+                case .profile:
+                    Profile()
+                        .navigationTitle("Профиль пользователя")
+                        .navigationBarTitleDisplayMode(.inline)
                 }
             }
+        }
+    }
+}
+
+extension HubView {
+    func multipleSelectButton() -> some View {
+        Button {
+            path.append(.animals)
+        } label: {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Животные (Multiple Select)")
+                    .font(.headline)
+                    .foregroundStyle(.black)
+                Text("Домашние, дикие, морские, птицы")
+                    .font(.caption)
+                    .foregroundStyle(.black)
+            }
+        }
+    }
+    
+    func profileCard() -> some View {
+        Button {
+            path.append(.profile)
+        } label: {
+            Text("Карточка пользователя")
+                .font(.headline)
+                .foregroundStyle(.black)
         }
     }
 }
