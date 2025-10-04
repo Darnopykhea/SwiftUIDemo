@@ -42,9 +42,8 @@ public final class MultipleSelectViewModel: ObservableObject {
     public func selectUnselectRows() {
         if (filterText ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             let allSelected = sections.allSatisfy { $0.state == .selected }
-            sections.forEach { $0.setSelectedForRows(!allSelected) }
+            sections.forEach { $0.setSelectedForAllRows(!allSelected) } // ← вместо setSelectedForRows
         } else {
-            // работаем только по видимым
             let filtered = sections.filter { !$0.filteredRows.isEmpty }
             let allVisibleSelected = filtered.allSatisfy { $0.filteredRows.allSatisfy { $0.isSelected } }
             filtered.forEach { $0.setSelectedForRows(!allVisibleSelected) }

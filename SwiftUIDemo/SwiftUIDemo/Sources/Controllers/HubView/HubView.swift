@@ -8,13 +8,13 @@
 import SwiftUI
 
 private enum Route: Hashable {
-    case profile
     case animals // Multiple Select
-    case summary([String]) // имена выбранных
 }
 
 public struct HubView: View {
     @State private var path: [Route] = []
+    @State private var showAlert = false
+    @State private var alertText = ""
 
     public init() {}
 
@@ -23,30 +23,36 @@ public struct HubView: View {
             List {
                 Section("Демки") {
                     multipleSelectButton()
-                    profileCard()
                 }
             }
             .navigationTitle("SwiftUI Demos")
+
+            // простой алерт
+            .alert("Выбрано", isPresented: $showAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(alertText.isEmpty ? "Ничего не выбрано" : alertText)
+            }
+
             .navigationDestination(for: Route.self) { route in
                 switch route {
                 case .animals:
+                    // Колбэк теперь поднимает алерт вместо пуша summary
                     let input = MultipleSelectMockData.animalsInput { selected in
-                        let names = selected.flatMap { $0.entries }.map { $0.title }
-                        path.append(.summary(names))
-                    }
-                    MultipleSelectFactory(input: input).makeObject()
-                        .navigationTitle(input.title)
-                        .navigationBarTitleDisplayMode(.inline)
+                        let names = selected
+                            .flatMap { $0.entries }
+                            .map { $0.title }
 
-                case .summary(let names):
-                    SelectionSummaryView(items: names) {
-                        path.removeAll()
+                        alertText = names.isEmpty
+                            ? "Ничего не выбрано"
+                            : names.joined(separator: ", ")
+
+                        showAlert = true
                     }
-                    .navigationTitle("Выбрано")
-                    .navigationBarTitleDisplayMode(.inline)
-                case .profile:
-                    Profile()
-                        .navigationTitle("Профиль пользователя")
+
+                    MultipleSelectFactory(input: input)
+                        .makeObject()
+                        .navigationTitle(input.title)
                         .navigationBarTitleDisplayMode(.inline)
                 }
             }
@@ -63,20 +69,11 @@ extension HubView {
                 Text("Животные (Multiple Select)")
                     .font(.headline)
                     .foregroundStyle(.black)
+
                 Text("Домашние, дикие, морские, птицы")
                     .font(.caption)
                     .foregroundStyle(.black)
             }
-        }
-    }
-    
-    func profileCard() -> some View {
-        Button {
-            path.append(.profile)
-        } label: {
-            Text("Карточка пользователя")
-                .font(.headline)
-                .foregroundStyle(.black)
         }
     }
 }

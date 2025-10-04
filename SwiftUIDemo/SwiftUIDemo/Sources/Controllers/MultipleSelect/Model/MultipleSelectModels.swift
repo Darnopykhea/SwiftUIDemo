@@ -96,6 +96,11 @@ public final class MultipleSelectEntryContainerHeader: MultipleSelectEntryHeader
     public func setSelectedForRows(_ isSelected: Bool) {
         filteredRows.forEach { $0.isSelected = isSelected }
     }
+    
+    // Новое: действует по всей секции (entries)
+    public func setSelectedForAllRows(_ isSelected: Bool) {
+        entries.forEach { $0.isSelected = isSelected }
+    }
 
     // MARK: - Private
 

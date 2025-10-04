@@ -9,20 +9,20 @@ import SwiftUI
 
 public struct MultipleSelectView: View {
 
-    @ObservedObject var viewModel: MultipleSelectViewModel
+    @StateObject private var viewModel: MultipleSelectViewModel
     @Environment(\.dismiss) private var dismiss
-
+    
     public init(viewModel: MultipleSelectViewModel) {
-        self.viewModel = viewModel
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
-
+    
     public var body: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 headerView()
-
-                Divider().padding(.bottom, 8)
-
+                Divider()
+                    .padding(.bottom, 8)
+                
                 ForEach(viewModel.sections) { section in
                     if !section.filteredRows.isEmpty {
                         SectionView(section: section, showHeader: true)
@@ -34,7 +34,7 @@ public struct MultipleSelectView: View {
         .safeAreaInset(edge: .top) { searchBar() }
         .overlay(alignment: .bottom) { applyButtonBar() }
         .ignoresSafeArea(.keyboard)
-        .gesture(DragGesture().onChanged { _ in hideKeyboard() }) // скрыть клаву по скроллу
+        .gesture(DragGesture().onChanged { _ in hideKeyboard() })
     }
 
     // MARK: - Pieces
@@ -106,8 +106,9 @@ private struct SectionView: View {
                 isResetButtonHidden: section.state == .nonSelected,
                 state: section.state,
                 onTap: { section.selectUnselectRows() },
-                onReset: { section.setSelectedForRows(false) }
+                onReset: { section.setSelectedForAllRows(false) }
             )
+
         }
         ForEach(section.filteredRows) { row in
             RowView(row: row)
