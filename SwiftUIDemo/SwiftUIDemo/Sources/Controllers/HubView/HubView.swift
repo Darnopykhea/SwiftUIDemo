@@ -9,6 +9,7 @@ import SwiftUI
 
 private enum Route: Hashable {
     case animals // Multiple Select
+    case news
 }
 
 public struct HubView: View {
@@ -23,6 +24,7 @@ public struct HubView: View {
             List {
                 Section("Демки") {
                     multipleSelectButton()
+                    newsSelectButton()
                 }
             }
             .navigationTitle("SwiftUI Demos")
@@ -54,6 +56,9 @@ public struct HubView: View {
                         .makeObject()
                         .navigationTitle(input.title)
                         .navigationBarTitleDisplayMode(.inline)
+                case .news:
+                    let viewModel = NewsViewModel(service: MockLocalContentService())
+                    NewsView(viewModel: viewModel)
                 }
             }
         }
@@ -72,6 +77,18 @@ extension HubView {
 
                 Text("Домашние, дикие, морские, птицы")
                     .font(.caption)
+                    .foregroundStyle(.black)
+            }
+        }
+    }
+    
+    func newsSelectButton() -> some View {
+        Button {
+            path.append(.news)
+        } label: {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Новости из мира кино")
+                    .font(.headline)
                     .foregroundStyle(.black)
             }
         }
